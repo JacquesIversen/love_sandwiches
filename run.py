@@ -47,25 +47,26 @@ def validate_data(values):
         print(f"invalid data: {e}, please try again.\n")
         return False
     return True
-
+"""
+Here follows updating sheets manually.
 def upgrade_sales_worksheet(data):
-    """
+    "
     Update sales worksheet, add new row with the list data provided
-    """
+    "
     print("Updating sales worksheet...\n")
     sales_worksheet = SHEET.worksheet("sales")
     sales_worksheet.append_row(data)
     print("Sales worksheet updated successfully.\n")
 
 def update_surplus_worksheet(data):
-    """
+    "
     Update Surplus worksheet, add new row with the list data provided
-    """
+    "
     print("Updating surplus worksheet...\n")
     surplus_worksheet = SHEET.worksheet("surplus")
     surplus_worksheet.append_row(data)
     print("Surplus worksheet updated successfully.\n")
-
+"""
 def update_worksheet(data, worksheet):
     """
     recieves a list of integers to be inserted into a worksgeet
@@ -94,6 +95,20 @@ def calculate_surplus_data(sales_row):
         surplus_data.append(surplus)
     return surplus_data
 
+
+def get_last_5_entries_sales():
+    """
+    Creates columns of data from sales worksheet, collecting the 
+    last 5 entries for each sadwich and returns the data as a list of lists.
+    """
+    sales = SHEET.worksheet("sales")
+
+    columns = []
+    for ind in range(1,7):
+        column = sales.col_values(ind)
+        columns.append(column[-5:])
+    return columns
+
 def main():
     """
     Run All program Functions
@@ -106,4 +121,6 @@ def main():
     
 
 print("Welcome To Love Sandwiches Data Automation")
-main()
+#main()
+
+sales_columns = get_last_5_entries_sales()
