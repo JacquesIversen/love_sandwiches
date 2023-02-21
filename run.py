@@ -1,7 +1,10 @@
 import gspread
 from google.oauth2.service_account import Credentials
+import json
 
-
+#EVERY google account has an IAM (Identity and Access Management)
+#Configuration which specifies what the user has access to.
+#The SCOPE list the APIs that the program shuld access in order to run.
 
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -9,7 +12,8 @@ SCOPE = [
     "https://www.googleapis.com/auth/drive"
     ]
 
-CREDS = Credentials.from_service_account_file('creds.json')
+creds = json.load(open('creds.json'))
+CREDS = Credentials.from_service_account_info(creds)
 SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 SHEET = GSPREAD_CLIENT.open('love_sandwiches')
@@ -132,12 +136,38 @@ def main():
     data = get_sales_data()
     sales_data = [int(num) for num in data]
     update_worksheet(sales_data, "sales")
+
     new_surplus_data = calculate_surplus_data(sales_data)
     update_worksheet(new_surplus_data, "surplus")
+
     sales_columns = get_last_5_entries_sales()
     stock_data = calculate_stock_data(sales_columns)
     update_worksheet(stock_data, "stock")
     
+    return stock_data
+    
 
-print("Welcome To Love Sandwiches Data Automation")
-main()
+print("Welcome To Love Sandwiches Data Automation.\n")
+stock_data = main()
+
+
+# student writes function
+def get_stock_values(data):
+    """
+    Print out the calculated stock numbers for each sandwich type.
+    """
+    headings = SHEET.worksheet("stock").get_all_values()[0]
+
+    # headings = SHEET.worksheet('stock').row_values(1)
+
+    print("Make the following numbers of sandwiches for next market:\n")
+
+    # new_data = {}
+    # for heading, stock_num in zip(headings, data):
+    #     new_data[heading] = stock_num
+    # return new_data
+    
+    return {heading: data for heading, data in zip(headings, data)}
+    
+stock_values = get_stock_values(stock_data)
+print(stock_values)
